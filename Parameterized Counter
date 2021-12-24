@@ -1,0 +1,15 @@
+// parameterized counter, frequency divider
+module pmcntr #(parameter siz=30)(input clk, reset, input [siz-1:0] count_max, output logic[siz-1:0] count, output logic clkout);
+
+always_ff @ (posedge clk or posedge reset)
+if (reset) begin
+	count <= {siz{1'b0}};
+	clkout <= 1'b0;
+	end
+else if (count<count_max)
+	count <= count + {{(siz-1){1'b0}},1'b1};
+else begin 
+	count <= {siz{1'b0}};
+	clkout <= ~clkout;
+	end
+endmodule
