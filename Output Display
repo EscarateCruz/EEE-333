@@ -1,0 +1,22 @@
+//Output module for a seven segment display (FPGA)
+
+module SevenSegment(input [6:0] D, output logic [6:0] S);
+
+always_comb begin
+
+S = 7'd0;
+case (D)
+	7'd0 : S = 7'b1000000;
+	7'd1 : S = 7'b1111001;
+	7'd2 : S = 7'b0100100;
+	7'd3 : S = 7'b0110000;
+	7'd4 : S = 7'b0011001;
+	7'd5 : S = 7'b0010010;
+	7'd6 : S = 7'b0000010;
+	7'd7 : S = 7'b1111000;
+	7'd8 : S = 7'b0000000;
+	7'd9 : S = 7'b0010000;
+	default : S = 7'b0000000;
+	endcase
+end
+endmodule
