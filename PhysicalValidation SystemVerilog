@@ -1,0 +1,119 @@
+module lab5_pv(input clk, SW0, SW1, KEY0, SW2, SW3, SW4, output logic [6:0] SevSeg5, SevSeg4, 
+SevSeg3, SevSeg2, SevSeg1, SevSeg0, output logic LED0, LED1, LED2, LED3, LED4, LED5, LED6, LED7);
+
+logic clk_step, clk_2hz, reset;
+logic [3:0] OPCODE;
+logic [7:0] PC, alu_out, W_Reg;
+logic [6:0] D5, D4, D3, D2, D1, D0;
+logic [6:0] SevDis5, SevDis4, SevDis3, SevDis2, SevDis1, SevDis0;
+logic [29:0] count_max = 30'd12500000;
+
+pmcntr Fdivider3(clk, reset, count_max, count, clk_2hz);
+lab5 PV1(clk_step, reset, OPCODE, PC, alu_out, W_Reg);
+
+SevenSegment S6(D5, SevDis5);
+SevenSegment S5(D4, SevDis4);
+SevenSegment S4(D3, SevDis3);
+SevenSegment S3(D2, SevDis2);
+SevenSegment S2(D1, SevDis1);
+SevenSegment S1(D0, SevDis0);
+
+
+always_comb begin
+
+LED0 = PC[0];
+LED1 = PC[1];
+LED2 = PC[2];
+LED3 = PC[3];
+LED4 = PC[4];
+LED5 = PC[5];
+LED6 = PC[6];
+LED7 = PC[7];
+
+SevSeg5 = SevDis5;
+SevSeg4 = SevDis4;
+SevSeg3 = SevDis3;
+SevSeg2 = SevDis2;
+SevSeg1 = SevDis1;
+SevSeg0 = SevDis0;
+
+D5 = 7'd0;
+D4 = 7'd0;
+D3 = 7'd0;
+D2 = 7'd0;
+D1 = 7'd0;
+D0 = 7'd0;
+
+clk_step = 1'b0;
+reset = 1'b0;
+
+if (SW0) 
+	reset = 1'b1;
+
+else if (SW1 && (~KEY0)) begin
+	clk_step = clk_2hz;
+	D5 = PC[5];
+	D4 = PC[4];
+	D3 = PC[3];
+	D2 = PC[2];
+	D1 = PC[1];
+	D0 = PC[0];	
+	end
+
+else if ((~SW4) && (~SW3) && (~SW2)) begin
+	SevSeg5 = 7'b0000110;
+	SevSeg4 = 7'b0010010;
+	SevSeg3 = 7'b1000110;
+	SevSeg2 = 7'b0001000;
+	SevSeg1 = 7'b0101111;
+	SevSeg0 = 7'b0001000;
+	end
+	
+else if ((SW4) && (SW3) && (~SW2)) begin
+	D5 = PC[5];
+	D4 = PC[4];
+	D3 = PC[3];
+	D2 = PC[2];
+	D1 = PC[1];
+	D0 = PC[0];
+	end
+
+else if ((SW4) && (~SW3) && (SW2)) begin
+	D5 = W_Reg[5];
+	D4 = W_Reg[4];
+	D3 = W_Reg[3];
+	D2 = W_Reg[2];
+	D1 = W_Reg[1];
+	D0 = W_Reg[0];
+	end
+
+else if ((~SW4) && (SW3) && (SW2)) begin
+	D5 = alu_out[5];
+	D4 = alu_out[4];
+	D3 = alu_out[3];
+	D2 = alu_out[2];
+	D1 = alu_out[1];
+	D0 = alu_out[0];
+	end
+
+else if ((SW4) && (SW3) && (SW2)) begin
+	SevSeg5 = 7'b1111111;
+	SevSeg4 = 7'b1111111;
+	D3 = OPCODE[3];
+	D2 = OPCODE[2];
+	D1 = OPCODE[1];
+	D0 = OPCODE[0];
+	end
+
+else begin
+	SevSeg5 = 7'b1111111;
+	SevSeg4 = 7'b1111111;
+	SevSeg3 = 7'b1111111;
+	SevSeg2 = 7'b1111111;
+	SevSeg1 = 7'b1111111;
+	SevSeg0 = 7'b1111111;
+	end
+
+end
+
+endmodule
