@@ -1,0 +1,24 @@
+//Lab 5 for building Microprocessor 
+//created by Victor Escarate-Cruz
+//July 5th, 2021
+
+module lab5_tb();
+
+logic clk, reset;
+logic [3:0] OPCODE;
+logic [7:0] PC, alu_out, W_Reg;
+
+lab5 TB1(clk, reset, OPCODE, PC, alu_out, W_Reg);
+
+initial begin
+	clk = 0; 
+	reset = 1; #5;
+	reset = 0; #5;
+	clk = 1; #5;
+	repeat (150) begin
+		$display("Clock: %b, Reset: %b, OPCODE: %d, PC: %d, ALU_Out: %d, W_Reg: %d", clk, reset, OPCODE, PC, alu_out, W_Reg);
+		clk = ~clk; #5;
+		end
+	end
+
+endmodule
